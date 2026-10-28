@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Voyager en Bretagne – Ce / Cet / Cette / Ces</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      color: #1a1a2e;
+      padding: 24px 16px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #003f7f, #0077b6);
+      color: white;
+      border-radius: 14px;
+      padding: 28px 32px;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    header .flag { font-size: 3rem; }
+    header h1 { font-size: 1.7rem; font-weight: 700; margin-bottom: 4px; }
+    header p { font-size: 0.95rem; opacity: 0.85; }
+
+    .timer-box {
+      background: white;
+      border: 2px solid #0077b6;
+      border-radius: 12px;
+      padding: 12px 24px;
+      text-align: center;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .timer-box span { font-size: 0.95rem; color: #555; }
+
+    #timer {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #0077b6;
+      min-width: 70px;
+    }
+
+    #timer.warning { color: #e07800; }
+    #timer.danger  { color: #cc0000; }
+
+    .timer-btn, .check-btn {
+      -webkit-appearance: none;
+      touch-action: manipulation;
+      cursor: pointer;
+    }
+
+    .timer-btn {
+      background: #0077b6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 16px;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+    .timer-btn:hover { background: #005f8e; }
+
+    .rule-box {
+      background: #e8f4ff;
+      border: 2px solid #0077b6;
+      border-radius: 12px;
+      padding: 16px 22px;
+      margin-bottom: 28px;
+      font-size: 0.95rem;
+    }
+
+    .rule-box h3 { color: #003f7f; font-size: 1rem; margin-bottom: 10px; }
+
+    .rule-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+    }
+
+    .rule-item {
+      background: white;
+      border-radius: 8px;
+      padding: 10px 14px;
+      border-left: 4px solid #0077b6;
+      font-size: 0.92rem;
+    }
+
+    .rule-item strong { color: #003f7f; font-size: 1.05rem; }
+    .rule-item span { display: block; color: #555; font-size: 0.85rem; margin-top: 2px; }
+
+    .task-card {
+      background: white;
+      border-radius: 14px;
+      padding: 28px 32px;
+      margin-bottom: 28px;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.08);
+      border-left: 6px solid #0077b6;
+    }
+
+    .task-card.writing {
+      border-left-color: #2a9d4e;
+      background: #f6fff9;
+    }
+
+    .task-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .task-number {
+      background: #0077b6;
+      color: white;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .task-card.writing .task-number { background: #2a9d4e; }
+
+    .task-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #003f7f;
+    }
+
+    .task-instruction {
+      font-size: 0.93rem;
+      color: #444;
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+
+    .task-instruction em {
+      background: #e8f4ff;
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-style: normal;
+      color: #0055a5;
+      font-weight: 600;
+    }
+
+    .mc-item { margin-bottom: 18px; }
+    .mc-item p { font-size: 0.97rem; margin-bottom: 8px; font-weight: 500; }
+
+    .mc-options label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-right: 12px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      padding: 5px 14px;
+      border-radius: 8px;
+      border: 1.5px solid #ccc;
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 6px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .mc-options label:hover { border-color: #0077b6; background: #e8f4ff; }
+    .mc-options input[type="radio"] { accent-color: #0077b6; }
+
+    .gap-sentence {
+      font-size: 0.97rem;
+      margin-bottom: 14px;
+      line-height: 2.2;
+    }
+
+    .gap-sentence input[type="text"] {
+      border: none;
+      border-bottom: 2px solid #0077b6;
+      background: transparent;
+      font-size: 0.97rem;
+      width: 80px;
+      text-align: center;
+      padding: 2px 4px;
+      color: #1a1a2e;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .drop-sentence {
+      font-size: 0.97rem;
+      margin-bottom: 14px;
+      line-height: 2.2;
+    }
+
+    .drop-sentence select {
+      border: 1.5px solid #0077b6;
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 0.93rem;
+      background: white;
+      cursor: pointer;
+      -webkit-appearance: auto;
+    }
+
+    .error-item {
+      margin-bottom: 16px;
+      background: #fff8e1;
+      border: 1.5px solid #f0c040;
+      border-radius: 10px;
+      padding: 12px 16px;
+    }
+
+    .error-item p { font-size: 0.97rem; margin-bottom: 8px; }
+
+    .error-item input[type="text"] {
+      border: none;
+      border-bottom: 2px solid #0077b6;
+      background: transparent;
+      font-size: 0.97rem;
+      width: 80px;
+      text-align: center;
+      padding: 2px 4px;
+      outline: none;
+      margin: 0 4px;
+      -webkit-appearance: none;
+    }
+
+    .open-item { margin-bottom: 16px; }
+    .open-item p { font-size: 0.97rem; margin-bottom: 6px; font-weight: 500; }
+
+    .open-item textarea {
+      width: 100%;
+      border: 1.5px solid #ccc;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.93rem;
+      resize: vertical;
+      min-height: 60px;
+      font-family: inherit;
+      -webkit-appearance: none;
+    }
+
+    .open-item textarea:focus { border-color: #0077b6; outline: none; }
+
+    .writing-help {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .help-box {
+      background: #e9f7ef;
+      border: 1.5px solid #2a9d4e;
+      border-radius: 10px;
+      padding: 12px 16px;
+    }
+
+    .help-box h4 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #2a9d4e;
+      margin-bottom: 8px;
+    }
+
+    .help-box ul { list-style: none; padding: 0; }
+    .help-box ul li { font-size: 0.9rem; padding: 2px 0; color: #1a3d28; }
+    .help-box ul li::before { content: "→ "; color: #2a9d4e; font-weight: 700; }
+
+    .writing-area {
+      width: 100%;
+      border: 1.5px solid #2a9d4e;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 0.95rem;
+      min-height: 220px;
+      resize: vertical;
+      font-family: inherit;
+      line-height: 1.7;
+      -webkit-appearance: none;
+    }
+
+    .writing-area:focus { outline: none; border-color: #1a7a3b; }
+    .writing-note { font-size: 0.82rem; color: #666; margin-top: 8px; }
+
+    .check-btn {
+      margin-top: 18px;
+      background: #0077b6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 26px;
+      font-size: 0.93rem;
+      font-weight: 600;
+      transition: background 0.2s;
+      display: inline-block;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .check-btn:hover, .check-btn:active { background: #005f8e; }
+    .task-card.writing .check-btn { background: #2a9d4e; }
+    .task-card.writing .check-btn:hover,
+    .task-card.writing .check-btn:active { background: #1f7a3b; }
+
+    .correction {
+      display: none;
+      margin-top: 18px;
+      background: #eaf6ff;
+      border: 1.5px solid #0077b6;
+      border-radius: 10px;
+      padding: 16px 20px;
+    }
+
+    .correction.writing-correction {
+      background: #f0fff5;
+      border-color: #2a9d4e;
+    }
+
+    .correction h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #003f7f;
+      margin-bottom: 10px;
+    }
+
+    .correction.writing-correction h4 { color: #1a5c2e; }
+    .correction ol, .correction ul { padding-left: 20px; font-size: 0.93rem; line-height: 1.9; }
+
+    .correct   { color: #1a7a3b; font-weight: 700; }
+    .incorrect { color: #cc0000; }
+
+    .score-badge {
+      display: inline-block;
+      background: #0077b6;
+      color: white;
+      font-weight: 700;
+      border-radius: 20px;
+      padding: 3px 14px;
+      font-size: 0.88rem;
+      margin-left: 10px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #888;
+      margin-top: 36px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="flag">🇫🇷</div>
+  <div>
+    <h1>Voyager en Bretagne</h1>
+    <p>Les adjectifs démonstratifs : <strong>ce · cet · cette · ces</strong> &nbsp;·&nbsp; Niveau A1+ &nbsp;·&nbsp; Classe 9</p>
+  </div>
+</header>
+
+<div class="rule-box">
+  <h3>📌 Rappel de la règle</h3>
+  <div class="rule-grid">
+    <div class="rule-item">
+      <strong>ce</strong>
+      <span>masculin singulier<br>→ <em>ce château</em></span>
+    </div>
+    <div class="rule-item">
+      <strong>cet</strong>
+      <span>masc. sing. + voyelle / h muet<br>→ <em>cet hôtel, cet itinéraire</em></span>
+    </div>
+    <div class="rule-item">
+      <strong>cette</strong>
+      <span>féminin singulier<br>→ <em>cette plage</em></span>
+    </div>
+    <div class="rule-item">
+      <strong>ces</strong>
+      <span>pluriel (masc. & fém.)<br>→ <em>ces rochers</em></span>
+    </div>
+  </div>
+</div>
+
+<div class="timer-box">
+  <span>⏱ Temps restant (exercices 1–5) :</span>
+  <span id="timer">20:00</span>
+  <button class="timer-btn" id="timerBtn">▶ Démarrer</button>
+</div>
+
+<!-- EXERCICE 1 -->
+<div class="task-card">
+  <div class="task-header">
+    <span class="task-number">Exercice 1</span>
+    <span class="task-title">Choisis le bon adjectif démonstratif !</span>
+  </div>
+  <p class="task-instruction">Choisis <em>ce</em>, <em>cet</em>, <em>cette</em> ou <em>ces</em> pour compléter chaque phrase.</p>
+
+  <div class="mc-item">
+    <p>1. ___ village breton est très pittoresque.</p>
+    <div class="mc-options">
+      <label><input type="radio" name="q1" value="ce"> ce</label>
+      <label><input type="radio" name="q1" value="cet"> cet</label>
+      <label><input type="radio" name="q1" value="cette"> cette</label>
+      <label><input type="radio" name="q1" value="ces"> ces</label>
+    </div>
+  </div>
+  <div class="mc-item">
+    <p>2. J'adore ___ crêpes bretonnes !</p>
+    <div class="mc-options">
+      <label><input type="radio" name="q2" value="ce"> ce</label>
+      <label><input type="radio" name="q2" value="cet"> cet</label>
+      <label><input type="radio" name="q2" value="cette"> cette</label>
+      <label><input type="radio" name="q2" value="ces"> ces</label>
+    </div>
+  </div>
+  <div class="mc-item">
+    <p>3. ___ église est très ancienne.</p>
+    <div class="mc-options">
+      <label><input type="radio" name="q3" value="ce"> ce</label>
+      <label><input type="radio" name="q3" value="cet"> cet</label>
+      <label><input type="radio" name="q3" value="cette"> cette</label>
+      <label><input type="radio" name="q3" value="ces"> ces</label>
+    </div>
+  </div>
+  <div class="mc-item">
+    <p>4. ___ hôtel est près de la plage.</p>
+    <div class="mc-options">
+      <label><input type="radio" name="q4" value="ce"> ce</label>
+      <label><input type="radio" name="q4" value="cet"> cet</label>
+      <label><input type="radio" name="q4" value="cette"> cette</label>
+      <label><input type="radio" name="q4" value="ces"> ces</label>
+    </div>
+  </div>
+  <div class="mc-item">
+    <p>5. Nous visitons ___ château demain.</p>
+    <div class="mc-options">
+      <label><input type="radio" name="q5" value="ce"> ce</label>
+      <label><input type="radio" name="q5" value="cet"> cet</label>
+      <label><input type="radio" name="q5" value="cette"> cette</label>
+      <label><input type="radio" name="q5" value="ces"> ces</label>
+    </div>
+  </div>
+  <div class="mc-item">
+    <p>6. ___ itinéraire est parfait pour les familles.</p>
+    <div class="mc-options">
+      <label><input type="radio" name="q6" value="ce"> ce</label>
+      <label><input type="radio" name="q6" value="cet"> cet</label>
+      <label><input type="radio" name="q6" value="cette"> cette</label>
+      <label><input type="radio" name="q6" value="ces"> ces</label>
+    </div>
+  </div>
+  <div class="mc-item">
+    <p>7. ___ phare est magnifique au coucher du soleil.</p>
+    <div class="mc-options">
+      <label><input type="radio" name="q7" value="ce"> ce</label>
+      <label><input type="radio" name="q7" value="cet"> cet</label>
+      <label><input type="radio" name="q7" value="cette"> cette</label>
+      <label><input type="radio" name="q7" value="ces"> ces</label>
+    </div>
+  </div>
+  <div class="mc-item">
+    <p>8. ___ rochers sont dangereux pour les bateaux.</p>
+    <div class="mc-options">
+      <label><input type="radio" name="q8" value="ce"> ce</label>
+      <label><input type="radio" name="q8" value="cet"> cet</label>
+      <label><input type="radio" name="q8" value="cette"> cette</label>
+      <label><input type="radio" name="q8" value="ces"> ces</label>
+    </div>
+  </div>
+
+  <button class="check-btn" data-ex="1">✔ Vérifier</button>
+  <div class="correction" id="corr1">
+    <h4>Correction – Exercice 1 <span class="score-badge" id="score1"></span></h4>
+    <ol id="list1"></ol>
+  </div>
+</div>
+
+<!-- EXERCICE 2 -->
+<div class="task-card">
+  <div class="task-header">
+    <span class="task-number">Exercice 2</span>
+    <span class="task-title">Complète avec ce, cet, cette ou ces !</span>
+  </div>
+  <p class="task-instruction">Écris la bonne forme dans chaque case. <em>Attention au genre et au nombre du nom !</em></p>
+
+  <div class="gap-sentence">1. <input type="text" id="g1"> marché est ouvert le samedi matin.</div>
+  <div class="gap-sentence">2. <input type="text" id="g2"> plage est idéale pour les enfants.</div>
+  <div class="gap-sentence">3. Tu vois <input type="text" id="g3"> bateaux dans le port ?</div>
+  <div class="gap-sentence">4. <input type="text" id="g4"> après-midi, on visite le musée.</div>
+  <div class="gap-sentence">5. <input type="text" id="g5"> région est connue pour ses crêpes.</div>
+  <div class="gap-sentence">6. Je n'oublie jamais <input type="text" id="g6"> endroit magnifique.</div>
+  <div class="gap-sentence">7. <input type="text" id="g7"> forêt s'appelle la forêt de Brocéliande.</div>
+  <div class="gap-sentence">8. <input type="text" id="g8"> menhirs datent de la préhistoire.</div>
+
+  <button class="check-btn" data-ex="2">✔ Vérifier</button>
+  <div class="correction" id="corr2">
+    <h4>Correction – Exercice 2 <span class="score-badge" id="score2"></span></h4>
+    <ol id="list2"></ol>
+  </div>
+</div>
+
+<!-- EXERCICE 3 -->
+<div class="task-card">
+  <div class="task-header">
+    <span class="task-number">Exercice 3</span>
+    <span class="task-title">Choisis dans le menu déroulant !</span>
+  </div>
+  <p class="task-instruction">Sélectionne la bonne forme : <em>ce</em>, <em>cet</em>, <em>cette</em> ou <em>ces</em>.</p>
+
+  <div class="drop-sentence">1. <select id="d1"><option value="">–</option><option>ce</option><option>cet</option><option>cette</option><option>ces</option></select> port est très animé le week-end.</div>
+  <div class="drop-sentence">2. On visite <select id="d2"><option value="">–</option><option>ce</option><option>cet</option><option>cette</option><option>ces</option></select> abbaye avec notre classe.</div>
+  <div class="drop-sentence">3. <select id="d3"><option value="">–</option><option>ce</option><option>cet</option><option>cette</option><option>ces</option></select> îles bretonnes sont très belles.</div>
+  <div class="drop-sentence">4. Tu connais <select id="d4"><option value="">–</option><option>ce</option><option>cet</option><option>cette</option><option>ces</option></select> artiste breton ?</div>
+  <div class="drop-sentence">5. <select id="d5"><option value="">–</option><option>ce</option><option>cet</option><option>cette</option><option>ces</option></select> avenue mène directement à la mer.</div>
+  <div class="drop-sentence">6. Je veux acheter <select id="d6"><option value="">–</option><option>ce</option><option>cet</option><option>cette</option><option>ces</option></select> souvenir pour ma famille.</div>
+  <div class="drop-sentence">7. <select id="d7"><option value="">–</option><option>ce</option><option>cet</option><option>cette</option><option>ces</option></select> ancien manoir appartient à la ville.</div>
+  <div class="drop-sentence">8. <select id="d8"><option value="">–</option><option>ce</option><option>cet</option><option>cette</option><option>ces</option></select> excursion dure toute la journée.</div>
+
+  <button class="check-btn" data-ex="3">✔ Vérifier</button>
+  <div class="correction" id="corr3">
+    <h4>Correction – Exercice 3 <span class="score-badge" id="score3"></span></h4>
+    <ol id="list3"></ol>
+  </div>
+</div>
+
+<!-- EXERCICE 4 -->
+<div class="task-card">
+  <div class="task-header">
+    <span class="task-number">Exercice 4</span>
+    <span class="task-title">Trouve et corrige l'erreur !</span>
+  </div>
+  <p class="task-instruction">Chaque phrase contient une erreur dans l'adjectif démonstratif. <em>Écris la bonne forme dans la case.</em></p>
+
+  <div class="error-item"><p>1. ❌ <strong>Ce</strong> plage est très populaire en été.</p>Correction : <input type="text" id="e1" placeholder="?"></div>
+  <div class="error-item"><p>2. ❌ <strong>Cette</strong> château date du Moyen Âge.</p>Correction : <input type="text" id="e2" placeholder="?"></div>
+  <div class="error-item"><p>3. ❌ <strong>Ce</strong> hôtel est très confortable.</p>Correction : <input type="text" id="e3" placeholder="?"></div>
+  <div class="error-item"><p>4. ❌ <strong>Ces</strong> route longe la côte pendant 10 km.</p>Correction : <input type="text" id="e4" placeholder="?"></div>
+  <div class="error-item"><p>5. ❌ <strong>Cet</strong> galettes sont délicieuses !</p>Correction : <input type="text" id="e5" placeholder="?"></div>
+  <div class="error-item"><p>6. ❌ <strong>Cette</strong> phare est le plus haut de Bretagne.</p>Correction : <input type="text" id="e6" placeholder="?"></div>
+
+  <button class="check-btn" data-ex="4">✔ Vérifier</button>
+  <div class="correction" id="corr4">
+    <h4>Correction – Exercice 4 <span class="score-badge" id="score4"></span></h4>
+    <ol id="list4"></ol>
+  </div>
+</div>
+
+<!-- EXERCICE 5 -->
+<div class="task-card">
+  <div class="task-header">
+    <span class="task-number">Exercice 5</span>
+    <span class="task-title">À toi d'écrire !</span>
+  </div>
+  <p class="task-instruction">Écris une phrase complète avec l'adjectif démonstratif correct pour chaque nom donné. <em>Attention : utilise ce / cet / cette / ces !</em></p>
+
+  <div class="open-item">
+    <p>1. <strong>la forêt</strong> → Écris une phrase avec <em>cette</em>.</p>
+    <textarea id="o1" placeholder="Cette forêt..."></textarea>
+  </div>
+  <div class="open-item">
+    <p>2. <strong>les menhirs</strong> → Écris une phrase avec <em>ces</em>.</p>
+    <textarea id="o2" placeholder="Ces menhirs..."></textarea>
+  </div>
+  <div class="open-item">
+    <p>3. <strong>le port</strong> → Écris une phrase avec <em>ce</em>.</p>
+    <textarea id="o3" placeholder="Ce port..."></textarea>
+  </div>
+  <div class="open-item">
+    <p>4. <strong>l'île</strong> → Écris une phrase avec <em>cette</em>.</p>
+    <textarea id="o4" placeholder="Cette île..."></textarea>
+  </div>
+  <div class="open-item">
+    <p>5. <strong>l'hôtel</strong> → Écris une phrase avec <em>cet</em>.</p>
+    <textarea id="o5" placeholder="Cet hôtel..."></textarea>
+  </div>
+
+  <button class="check-btn" data-ex="5">💡 Voir des exemples</button>
+  <div class="correction" id="corr5">
+    <h4>Exemples de réponses – Exercice 5</h4>
+    <ol>
+      <li><span class="correct">Cette forêt est mystérieuse et très ancienne.</span></li>
+      <li><span class="correct">Ces menhirs datent de la préhistoire.</span></li>
+      <li><span class="correct">Ce port est très animé le matin.</span></li>
+      <li><span class="correct">Cette île est accessible seulement en bateau.</span></li>
+      <li><span class="correct">Cet hôtel est près de la plage.</span></li>
+    </ol>
+    <p style="margin-top:8px;font-size:0.85rem;color:#555;">💡 Ton professeur corrigera tes phrases.</p>
+  </div>
+</div>
+
+<!-- EXERCICE 6 – Schreibaufgabe -->
+<div class="task-card writing">
+  <div class="task-header">
+    <span class="task-number">✏ Exercice 6</span>
+    <span class="task-title">Mon journal de voyage en Bretagne</span>
+  </div>
+  <p class="task-instruction">Écris une entrée de journal de voyage (environ 80–100 mots). <em>Utilise les aides ci-dessous et emploie ce / cet / cette / ces au moins 3 fois !</em></p>
+
+  <div class="writing-help">
+    <div class="help-box">
+      <h4>🗓 Débuts de phrases</h4>
+      <ul>
+        <li>Aujourd'hui, je / nous …</li>
+        <li>Le matin, on …</li>
+        <li>D'abord, … ensuite …</li>
+        <li>C'est …</li>
+        <li>J'adore / Je trouve que …</li>
+        <li>Ce soir, …</li>
+      </ul>
+    </div>
+    <div class="help-box">
+      <h4>🏃 Activités</h4>
+      <ul>
+        <li>visiter (le château / la ville)</li>
+        <li>manger (des crêpes / une galette)</li>
+        <li>faire du vélo / du surf</li>
+        <li>aller à la plage / au marché</li>
+        <li>prendre des photos</li>
+        <li>se promener dans la forêt</li>
+        <li>voir les menhirs de Carnac</li>
+      </ul>
+    </div>
+    <div class="help-box">
+      <h4>📖 Vocabulaire utile</h4>
+      <ul>
+        <li>ce village / ce phare</li>
+        <li>cet hôtel / cet endroit</li>
+        <li>cette plage / cette région</li>
+        <li>ces rochers / ces bateaux</li>
+        <li>magnifique / super / calme</li>
+        <li>historique / ancien(ne)</li>
+        <li>près de la mer / du port</li>
+        <li>avec ma famille / mes amis</li>
+      </ul>
+    </div>
+    <div class="help-box">
+      <h4>✅ À vérifier</h4>
+      <ul>
+        <li>Ce / Cet / Cette / Ces ≥ 3×</li>
+        <li>Verbe conjugué au présent</li>
+        <li>Au moins 4 activités</li>
+        <li>Phrases complètes</li>
+        <li>Majuscule + point</li>
+      </ul>
+    </div>
+  </div>
+
+  <textarea class="writing-area" id="journal"
+    placeholder="Lundi, 14 juillet – Bretagne&#10;&#10;Aujourd'hui, nous allons à ..."></textarea>
+  <p class="writing-note">⚠ Cette tâche n'est pas limitée dans le temps. Ton professeur corrigera ton texte.</p>
+
+  <button class="check-btn" data-ex="6">💡 Voir la liste de contrôle</button>
+  <div class="correction writing-correction" id="corr6">
+    <h4>Liste de contrôle – Journal de voyage</h4>
+    <ul>
+      <li>🟢 <strong>Démonstratifs :</strong> as-tu utilisé <em>ce / cet / cette / ces</em> au moins 3 fois ?</li>
+      <li>🟢 <strong>Verbes :</strong> les verbes sont-ils bien conjugués au présent ?</li>
+      <li>🟢 <strong>Activités :</strong> as-tu mentionné au moins 4 activités différentes ?</li>
+      <li>🟢 <strong>Vocabulaire :</strong> as-tu utilisé des adjectifs (magnifique, historique…) ?</li>
+      <li>🟢 <strong>Longueur :</strong> environ 80–100 mots ?</li>
+      <li>🟢 <strong>Ponctuation :</strong> majuscules et points corrects ?</li>
+    </ul>
+    <p style="margin-top:10px;font-size:0.88rem;color:#2a5c1e;">
+      ✨ <strong>Exemple de début :</strong><br>
+      <em>Aujourd'hui, nous visitons <u>ce</u> château magnifique près de <u>cette</u> plage.
+      Le matin, je fais du vélo avec mes amis. On mange des crêpes dans <u>cet</u> ancien restaurant du port…</em>
+    </p>
+  </div>
+</div>
+
+<footer>
+  <p>🎓 Exercices créés pour la classe 9 · Niveau A1+ · Thème : Voyager en Bretagne · ce / cet / cette / ces</p>
+</footer>
+
+<script>
+  /* ════ TIMER ════ */
+  let totalSeconds = 20 * 60;
+  let timerRunning = false;
+  let timerInterval = null;
+
+  document.getElementById('timerBtn').addEventListener('click', toggleTimer);
+
+  function toggleTimer() {
+    const btn = document.getElementById('timerBtn');
+    if (!timerRunning) {
+      timerRunning = true;
+      btn.textContent = '⏸ Pause';
+      timerInterval = setInterval(() => {
+        totalSeconds--;
+        updateTimerDisplay();
+        if (totalSeconds <= 0) {
+          clearInterval(timerInterval);
+          timerRunning = false;
+          document.getElementById('timer').textContent = '00:00';
+          btn.textContent = '⏹ Terminé';
+          alert('⏰ Le temps est écoulé ! Remettez vos exercices.');
+        }
+      }, 1000);
+    } else {
+      timerRunning = false;
+      clearInterval(timerInterval);
+      btn.textContent = '▶ Continuer';
+    }
+  }
+
+  function updateTimerDisplay() {
+    const el = document.getElementById('timer');
+    const m = Math.floor(totalSeconds / 60);
+    const s = totalSeconds % 60;
+    el.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    el.className = totalSeconds <= 120 ? 'danger' : totalSeconds <= 300 ? 'warning' : '';
+  }
+
+  /* ════ CHECK-BUTTONS via addEventListener ════ */
+  document.querySelectorAll('.check-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const ex = this.getAttribute('data-ex');
+      if (ex === '1') checkEx1();
+      else if (ex === '2') checkEx2();
+      else if (ex === '3') checkEx3();
+      else if (ex === '4') checkEx4();
+      else if (ex === '5') checkEx5();
+      else if (ex === '6') checkEx6();
+    });
+  });
+
+  /* ════ HILFSFUNKTIONEN ════ */
+  function renderList(listId, answers, userAnswers, labels) {
+    const ol = document.getElementById(listId);
+    ol.innerHTML = '';
+    let score = 0;
+    answers.forEach((ans, i) => {
+      const li = document.createElement('li');
+      const ok = userAnswers[i].trim().toLowerCase() === ans.toLowerCase();
+      if (ok) score++;
+      li.innerHTML = ok
+        ? `<span class="correct">✔ ${labels[i]} → <strong>${ans}</strong></span>`
+        : `<span class="incorrect">✘ ${labels[i]} → correct : <strong>${ans}</strong> (tu as écrit : „${userAnswers[i] || '–'}")</span>`;
+      ol.appendChild(li);
+    });
+    return score;
+  }
+
+  function showScore(id, got, max) {
+    document.getElementById(id).textContent = `${got} / ${max}`;
+  }
+
+  function showCorr(id) {
+    const el = document.getElementById(id);
+    el.style.display = 'block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* ════ EXERCICE 1 ════ */
+  const ans1 = ['ce','ces','cette','cet','ce','cet','ce','ces'];
+  const lbl1 = ['___ village','___ crêpes','___ église','___ hôtel','___ château','___ itinéraire','___ phare','___ rochers'];
+
+  function checkEx1() {
+    const ua = ans1.map((_, i) => {
+      const sel = document.querySelector(`input[name="q${i+1}"]:checked`);
+      return sel ? sel.value : '';
+    });
+    const score = renderList('list1', ans1, ua, lbl1);
+    showScore('score1', score, ans1.length);
+    showCorr('corr1');
+  }
+
+  /* ════ EXERCICE 2 ════ */
+  const ans2 = ['ce','cette','ces','cet','cette','cet','cette','ces'];
+  const lbl2 = ['___ marché','___ plage','___ bateaux','___ après-midi','___ région','___ endroit','___ forêt','___ menhirs'];
+
+  function checkEx2() {
+    const ua = ans2.map((_, i) => document.getElementById(`g${i+1}`).value);
+    const score = renderList('list2', ans2, ua, lbl2);
+    showScore('score2', score, ans2.length);
+    showCorr('corr2');
+  }
+
+  /* ════ EXERCICE 3 ════ */
+  const ans3 = ['ce','cette','ces','ce','cette','ce','cet','cette'];
+  const lbl3 = ['___ port','___ abbaye','___ îles','___ artiste','___ avenue','___ souvenir','___ ancien manoir','___ excursion'];
+
+  function checkEx3() {
+    const ua = ans3.map((_, i) => document.getElementById(`d${i+1}`).value);
+    const score = renderList('list3', ans3, ua, lbl3);
+    showScore('score3', score, ans3.length);
+    showCorr('corr3');
+  }
+
+  /* ════ EXERCICE 4 ════ */
+  const ans4 = ['cette','ce','cet','cette','ces','ce'];
+  const lbl4 = ['Ce → plage (fém.)','Cette → château (masc.)','Ce → hôtel (h muet)','Ces → route (sing.)','Cet → galettes (plur.)','Cette → phare (masc.)'];
+
+  function checkEx4() {
+    const ua = ans4.map((_, i) => document.getElementById(`e${i+1}`).value);
+    const score = renderList('list4', ans4, ua, lbl4);
+    showScore('score4', score, ans4.length);
+    showCorr('corr4');
+  }
+
+  /* ════ EXERCICE 5 & 6 ════ */
+  function checkEx5() { showCorr('corr5'); }
+  function checkEx6() { showCorr('corr6'); }
+</script>
+
+</body>
+</html>
